@@ -182,7 +182,7 @@
     box.setMecanicoResponsavel(mecanico);
     mecanico.setTemBox(true);
 
-    System.out.println("Mecânico " + mecanico.getNome() + " associado ao Box " + box.getNumero() + " com sucesso");
+    System.out.println("Mecânico " + mecanico.getNome() + "associado ao Box " + box.getNumero() + " com sucesso");
     }
 
     private static void atribuirOrdemBox(Scanner sc) {
@@ -262,7 +262,7 @@
 
     private static void informarOrdensFinalizadasPorBox() {
     for (Box b : boxes) {
-    System.out.println("Box " + b.getNumero() + " (" + b.getLocalizacao() + "): " + b.getTotalOrdensFinalizadas() + " ordem(ns) finalizada(s)");
+    System.out.println("Box " + b.getNumero() + " (" + b.getLocalizacao() + "): " + b.getTotalOrdensFinalizadas() + " ordem finalizada");
     }
     }
 
