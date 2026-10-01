@@ -132,5 +132,142 @@ public class Main{
         System.out.println("Ordem cadastrada. Código: " + novaOrdem.getCodigo());
 }
 
+=
+    private static void associarMecanicoBox(Scanner sc) {
+
+    System.out.println("Mecânicos cadastrados:");
+    for (int i = 0; i < mecanicos.size(); i++) {
+    Mecanico m = mecanicos.get(i);
+    System.out.println(i + " " + m.getNome() + "Tem Box? " + (m.isTemBox() ? "Sim" : "Não"));
+    }
+
+    System.out.print("Selecione o mecânico: ");
+    int idMecanico = sc.nextInt();
+
+    if (idMecanico < 0 || idMecanico >= mecanicos.size()) {
+    System.out.println("Mecânico inválido.");
+    return;
+    }
+
+    Mecanico mecanico = mecanicos.get(idMecanico);
+
+    if (mecanico.isTemBox()) {
+    System.out.println("Erro: O mecânico " + mecanico.getNome() + " já tem uma box");
+    return;
+    }
+
+    System.out.println("Boxes cadastrados:");
+    for (int i = 0; i < boxes.size(); i++) {
+    Box b = boxes.get(i);
+    String resp = (b.getMecanicoResponsavel() != null) ? b.getMecanicoResponsavel().getNome() : "Nenhum";
+    System.out.println(i + "Box " + b.getNumero() + " (" + b.getTipoServicoPermitido() + ") Responsável: " + resp);
+    }
+
+    System.out.print("Selecione o box: ");
+    int idBox = sc.nextInt();
+
+    if (idBox < 0 || idxBox >= boxes.size()) {
+    System.out.println("Box inválido");
+    return;
+    }
+
+    Box box = boxes.get(idxBox);
+
+    if (box.getMecanicoResponsavel() != null) {
+    box.getMecanicoResponsavel().setTemBox(false);
+    }
+
+    box.setMecanicoResponsavel(mecanico);
+    mecanico.setTemBox(true);
+
+    System.out.println("Mecânico " + mecanico.getNome() + " associado ao Box" + box.getNumero() + " com sucesso");
+    }
+
+    private static void atribuirOrdemBox(Scanner sc) {
+
+    List<OrdemServico> ordensAbertas = new ArrayList<>();
+    for (OrdemServico os : ordens) {
+    if (os.getStatus() == StatusOrdem.ABERTA) {
+    ordensAbertas.add(os);
+    }
+    }
+
+    if (ordensAbertas.isEmpty()) {
+    System.out.println("Não há ordens de serviço abertas precisansdo de box");
+    return;
+    }
+
+    System.out.println("Ordens de serviço abertas:");
+    for (int i = 0; i < ordensAbertas.size(); i++) {
+    OrdemServico os = ordensAbertas.get(i);
+    System.out.println(i + "Código: " + os.getCodigo() + "Cliente: " + os.getNomeCliente() +
+    "Serviço: " + os.getServico().getNome());
+    }
+
+    System.out.print("Selecione a ordem: ");
+    int idOrdem = scanner.nextInt();
+
+    if (idOrdem < 0 || idOrdem >= ordensAbertas.size()) {
+    System.out.println("Ordem inválida.");
+    return;
+    }
+
+    OrdemServico ordemSelecionada = ordensAbertas.get(idOrdem);
+
+    System.out.println("Boxes cadastrados:");
+    for (int i = 0; i < boxes.size(); i++) {
+    Box b = boxes.get(i);
+    System.out.println(i + "Box" + b.getNumero() + "Tipo: " + b.getTipoServicoPermitido() +
+    "Ocupação: " + b.getOrdens().size() + "/" + b.getCapacidadeMaxima());
+    }
+
+    System.out.print("Selecione o box: ");
+    int idBox = sc.nextInt();
+
+    if (idBox < 0 || idBox >= boxes.size()) {
+    System.out.println("Box inválido.");
+    return;
+    }
+
+    Box boxSelecionado = boxes.get(idBox);
+
+    if (boxSelecionado.adicionarOrdem(ordemSelecionada)) {
+    ordemSelecionada.setBoxAtribuido(boxSelecionado);
+    ordemSelecionada.setStatus(StatusOrdem.EM_EXECUCAO);
+    System.out.println("Ordem" + ordemSelecionada.getCodigo() + " atribuída ao Box" + boxSelecionado.getNumero() + " com sucess");
+    }
+    }
+
+    private static void exibirOrdensPorBox(Scanner sc) {
+    for (int i = 0; i < boxes.size(); i++) {
+    System.out.println(i + "Box" + boxes.get(i).getNumero());
+    }
+
+    System.out.print("Selecione o box: ");
+    int idBox = scanner.nextInt();
+
+    if (idBox < 0 || idBox >= boxes.size()) {
+    System.out.println("Box inválido.");
+    return;
+    }
+
+    Box box = boxes.get(idBox);
+    List<OrdemServico> listaOrdens = box.getOrdens();
+
+    System.out.println("\nOrdens atualmente no Box" + box.getNumero() + ":");
+    for (OrdemServico os : listaOrdens) {
+    System.out.println("Código: " + os.getCodigo() + "Cliente: " + os.getNomeCliente() +
+    " Veículo: " + os.getModeloVeiculo() + " Status: " + os.getStatus());
+    }
+    System.out.println("Total de ordens no box: " + listaOrdens.size());
+    }
+
+    private static void informarOrdensFinalizadasPorBox() {
+    for (Box b : boxes) {
+    System.out.println("Box" + b.getNumero() + " (" + b.getLocalizacao() + "): " +
+    b.getTotalOrdensFinalizadas() + "ordem finalizada");
+    }
+    }
+
 
 }
