@@ -6,7 +6,7 @@
     private static List<Mecanico> mecanicos = new ArrayList<>();
     private static List<Box> boxes = new ArrayList<>();
     private static List<OrdemServico> ordens = new ArrayList<>();
-    private static int geradorCodigoOrdem = 1; // Variável declarada para gerar os códigos das ordens
+    private static int geradorCodigoOrdem = 1;
 
     public static void Dados() {
     Mecanico m1 = new Mecanico("Jonatan silva", "11122233344", "Freioslakkk", "3299993333");
@@ -125,7 +125,15 @@
     System.out.println("Mecânicos cadastrados:");
     for (int i = 0; i < mecanicos.size(); i++) {
     Mecanico m = mecanicos.get(i);
-    System.out.println(i + " - " + m.getNome() + " | Tem Box? " + (m.isTemBox() ? "Sim" : "Não"));
+
+    String temBoxTexto;
+    if (m.isTemBox()) {
+    temBoxTexto = "Sim";
+    } else {
+    temBoxTexto = "Não";
+    }
+
+    System.out.println(i + "" + m.getNome() + " | Tem Box? " + temBoxTexto);
     }
 
     System.out.print("Selecione o mecânico: ");
@@ -146,8 +154,15 @@
     System.out.println("Boxes cadastrados:");
     for (int i = 0; i < boxes.size(); i++) {
     Box b = boxes.get(i);
-    String resp = (b.getMecanicoResponsavel() != null) ? b.getMecanicoResponsavel().getNome() : "Nenhum";
-    System.out.println(i + " - Box " + b.getNumero() + " (" + b.getTipoServicoPermitido() + ") Responsável: " + resp);
+
+    String resp;
+    if (b.getMecanicoResponsavel() != null) {
+    resp = b.getMecanicoResponsavel().getNome();
+    } else {
+    resp = "Nenhum";
+    }
+
+    System.out.println(i + " Box " + b.getNumero() + " (" + b.getTipoServicoPermitido() + ") Responsável: " + resp);
     }
 
     System.out.print("Selecione o box: ");
@@ -202,7 +217,7 @@
     System.out.println("Boxes cadastrados:");
     for (int i = 0; i < boxes.size(); i++) {
     Box b = boxes.get(i);
-    System.out.println(i + "Box " + b.getNumero() + "Tipo: " + b.getTipoServicoPermitido() + " Ocupação: " + b.getOrdens().size() + "/" + b.getCapacidadeMaxima());
+    System.out.println(i + "Box " + b.getNumero() + "Tipo: " + b.getTipoServicoPermitido() + "Ocupação: " + b.getOrdens().size() + "/" + b.getCapacidadeMaxima());
     }
 
     System.out.print("Selecione o box: ");
@@ -224,7 +239,7 @@
 
     private static void exibirOrdensPorBox(Scanner sc) {
     for (int i = 0; i < boxes.size(); i++) {
-    System.out.println(i + "Box " + boxes.get(i).getNumero());
+    System.out.println(i + " - Box " + boxes.get(i).getNumero());
     }
 
     System.out.print("Selecione o box: ");
@@ -247,7 +262,7 @@
 
     private static void informarOrdensFinalizadasPorBox() {
     for (Box b : boxes) {
-    System.out.println("Box " + b.getNumero() + " (" + b.getLocalizacao() + "): " + b.getTotalOrdensFinalizadas() + " ordem( finalizada");
+    System.out.println("Box " + b.getNumero() + " (" + b.getLocalizacao() + "): " + b.getTotalOrdensFinalizadas() + " ordem(ns) finalizada(s)");
     }
     }
 
@@ -257,10 +272,13 @@
     int op = sc.nextInt();
 
     StatusOrdem statusBuscado = null;
-    if (op == 1) statusBuscado = StatusOrdem.ABERTA;
-    else if (op == 2) statusBuscado = StatusOrdem.EM_EXECUCAO;
-    else if (op == 3) statusBuscado = StatusOrdem.FINALIZADA;
-    else {
+    if (op == 1) {
+    statusBuscado = StatusOrdem.ABERTA;
+    } else if (op == 2) {
+    statusBuscado = StatusOrdem.EM_EXECUCAO;
+    } else if (op == 3) {
+    statusBuscado = StatusOrdem.FINALIZADA;
+    } else {
     System.out.println("Opção inválida.");
     return;
     }
@@ -272,7 +290,9 @@
     encontrou = true;
     }
     }
-    if (!encontrou) System.out.println("Nenhuma ordem encontrada.");
+    if (!encontrou) {
+    System.out.println("Nenhuma ordem encontrada.");
+    }
     }
 
     private static void exibirDetalhesOrdem(Scanner sc) {
@@ -288,4 +308,33 @@
     System.out.println("Ordem não encontrada.");
     }
 
+    private static void alterarStatusOrdem(Scanner sc) {
+    System.out.print("Informe o código da ordem: ");
+    int cod = sc.nextInt();
+
+    OrdemServico ordem = null;
+    for (OrdemServico os : ordens) {
+    if (os.getCodigo() == cod) {
+    ordem = os;
+    break;
+    }
+    }
+
+    if (ordem == null) {
+    System.out.println("Ordem não encontrada.");
+    return;
+    }
+
+    if (ordem.getStatus() == StatusOrdem.EM_EXECUCAO) {
+    Box box = ordem.getBoxAtribuido();
+    if (box != null) {
+    box.removerOrdem(ordem);
+    box.incrementarFinalizadas();
+    }
+    ordem.setStatus(StatusOrdem.FINALIZADA);
+    System.out.println("Ordem finalizada com sucesso!");
+    } else {
+    System.out.println("A ordem não está em execução para poder ser finalizada.");
+    }
+    }
     }
